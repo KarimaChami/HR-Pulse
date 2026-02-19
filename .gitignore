@@ -1,2 +1,19 @@
-.env
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.python-version
+# venv
+.venv/
+
+# Terraform
+infra
+
+# Secrets
+*.env
+test.py
+uv.lock
+pyproject.toml
 
