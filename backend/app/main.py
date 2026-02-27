@@ -115,7 +115,7 @@ def predict(request: PredictRequest, current_user: UserResponse = Depends(get_cu
 
 
 @app.get("/health", tags=["System"])
-def health(db: Session = Depends(get_db),current_user: UserResponse = Depends(get_current_user)):
+def health(db: Session = Depends(get_db)):
     """Vérifie l'état de l'API et de la connexion SQL."""
     try:
         count = db.execute(text("SELECT COUNT(*) FROM jobs")).scalar()
