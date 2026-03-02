@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import heroImage from "@/assets/image2.jpg";
 import { 
   Brain, 
   Eye, 
@@ -295,32 +296,49 @@ export function RegisterPage() {
       </div>
 
       {/* Right side - Visual */}
-      <div className="hidden lg:flex flex-1 relative overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 to-blue-600/30" />
-        <div className="absolute inset-0 backdrop-blur-3xl" />
-        
-        {/* Animated shapes */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-blue-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-radial from-purple-500/20 via-transparent to-transparent" />
-        </div>
+      {/* Right side - Visual */}
+<div className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center">
 
-        {/* Content */}
-        <div className="relative flex flex-col items-center justify-center p-12 text-center">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center mb-6 shadow-glow-purple">
-            <Brain className="w-10 h-10 text-white" />
-          </div>
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Start Your AI Journey
-          </h2>
-          <p className="text-gray-300 max-w-md">
-            Join thousands of HR professionals transforming their recruitment 
-            process with intelligent analytics and predictions.
-          </p>
-        </div>
-      </div>
+  {/* Background Layers */}
+<div
+  className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none"
+  style={{ backgroundImage: `url(${heroImage})` }}
+/>
+  {/* Animated Glow Shapes */}
+  <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute top-1/3 left-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-float" />
+    <div
+      className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-float"
+      style={{ animationDelay: "4s" }}
+    />
+  </div>
+
+  {/* Subtle Grid Overlay */}
+  <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:50px_50px]" />
+
+  {/* Centered Content */}
+  <div className="relative z-10 flex flex-col items-center justify-center text-center px-16 max-w-2xl space-y-8">
+
+    <div className="px-5 py-2 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-sm tracking-widest uppercase">
+      HR Intelligence Platform
+    </div>
+
+    <h2 className="text-5xl xl:text-6xl font-extrabold text-white leading-tight">
+      Smarter Hiring <br />
+      <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+        Powered by AI
+      </span>
+    </h2>
+
+    <p className="text-lg xl:text-xl text-gray-300 leading-relaxed">
+      Transform recruitment with predictive analytics, skill insights,
+      and intelligent salary estimation — all in one powerful dashboard.
+    </p>
+
+    <div className="w-24 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
+
+  </div>
+</div>
     </div>
   );
 }

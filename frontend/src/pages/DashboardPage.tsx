@@ -230,44 +230,77 @@ export function DashboardPage() {
             </Badge>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={skillsData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {skillsData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#0f172a', 
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '8px',
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-col gap-2">
-                {skillsData.map((skill, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: skill.color }}
-                    />
-                    <span className="text-sm text-gray-400">{skill.name}</span>
-                    <span className="text-sm text-white font-medium">{skill.value}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+<div className="h-72 bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl flex items-center justify-between gap-8">
+
+  {/* Chart Section */}
+  <div className="relative w-1/2 h-full">
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={skillsData}
+          cx="50%"
+          cy="50%"
+          innerRadius={65}
+          outerRadius={95}
+          paddingAngle={4}
+          dataKey="value"
+        >
+          {skillsData.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={entry.color}
+              className="transition-all duration-300 hover:opacity-80"
+            />
+          ))}
+        </Pie>
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "#0f172a",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "12px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+            color: "#fff",
+          }}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+
+    {/* Center Label */}
+    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+      <span className="text-3xl font-bold text-white">
+        {skillsData.reduce((acc, item) => acc + item.value, 0)}%
+      </span>
+      <span className="text-xs text-gray-400 tracking-wide">
+        Total Skills
+      </span>
+    </div>
+  </div>
+
+  {/* Legend Section */}
+  <div className="w-1/2 flex flex-col gap-4">
+    {skillsData.map((skill, index) => (
+      <div
+        key={index}
+        className="flex items-center justify-between bg-slate-800/50 hover:bg-slate-800 transition-all duration-300 px-4 py-2 rounded-xl"
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className="w-3 h-3 rounded-full shadow-md"
+            style={{ backgroundColor: skill.color }}
+          />
+          <span className="text-sm text-gray-300 font-medium">
+            {skill.name}
+          </span>
+        </div>
+
+        <span className="text-sm text-white font-semibold">
+          {skill.value}%
+        </span>
+      </div>
+    ))}
+  </div>
+
+</div>
           </CardContent>
         </Card>
       </div>
