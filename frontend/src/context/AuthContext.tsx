@@ -18,12 +18,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored token on mount
+    // Check for stored token and validate on mount
     const token = localStorage.getItem('token');
     if (token) {
-      // Token exists, user is considered authenticated
-      // In a real app, you might want to validate the token
-      setIsLoading(false);
+      // Validate token by fetching user data
+      apiService.getCurrentUser()
+        .then((user) => {
+          setUser(user);
+        })
+        .catch(() => {
+          // Token invalid, clear it
+          localStorage.removeItem('token');
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }
@@ -34,15 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token: Token = await apiService.login(credentials);
       localStorage.setItem('token', token.access_token);
       
-      // Create a minimal user object from the email
-      const user: User = {
-        id: 0,
-        first_name: credentials.email.split('@')[0],
-        last_name: '',
-        email: credentials.email,
-        role: 'user',
-        created_at: new Date().toISOString(),
-      };
+      // Fetch real user data from backend
+      const user = await apiService.getCurrentUser();
       setUser(user);
     } catch (error) {
       console.error('Login error:', error);

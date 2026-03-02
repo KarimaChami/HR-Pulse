@@ -49,8 +49,10 @@ export interface PredictRequest {
 }
 
 export interface PredictResponse {
+  job_title: string;
   predicted_salary: number;
-  confidence?: number;
+  salary_range: string;
+  skills_used: string[];
 }
 
 // API Response types

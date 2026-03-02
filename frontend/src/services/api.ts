@@ -65,6 +65,11 @@ class ApiService {
     return response.data;
   }
 
+  async getCurrentUser(): Promise<User> {
+    const response = await this.client.get('/me');
+    return response.data;
+  }
+
   // Jobs endpoints
   async getJobs(limit: number = 20, offset: number = 0): Promise<Job[]> {
     const response = await this.client.get('/jobs', {
