@@ -188,14 +188,7 @@ export function LandingPage() {
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button 
-                size="lg"
-                variant="outline"
-                className="border-white/20 text-white hover:bg-white/5 px-8 py-6 text-lg rounded-xl"
-                onClick={() => navigate('/login')}
-              >
-                View Demo
-              </Button>
+
             </div>
           </div>
         </div>

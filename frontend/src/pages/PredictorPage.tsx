@@ -84,7 +84,12 @@ export function PredictorPage() {
       console.error('Prediction error:', error);
       // Fallback for demo
       const mockSalary = Math.floor(Math.random() * 50000) + 80000;
-      setPrediction({ predicted_salary: mockSalary });
+      setPrediction({
+                      job_title: jobTitle,
+                      predicted_salary: mockSalary,
+                      salary_range: `$${(mockSalary * 0.9).toLocaleString()} — $${(mockSalary * 1.1).toLocaleString()}`,
+                      skills_used: skills,
+                    });
       
       const newHistoryItem: PredictionHistory = {
         id: Date.now().toString(),
@@ -301,7 +306,12 @@ export function PredictorPage() {
                       onClick={() => {
                         setJobTitle(item.jobTitle);
                         setSkills(item.skills);
-                        setPrediction({ predicted_salary: item.predictedSalary });
+                        setPrediction({
+                                    job_title: item.jobTitle,
+                                    predicted_salary: item.predictedSalary,
+                                    salary_range: `$${(item.predictedSalary * 0.9).toLocaleString()} — $${(item.predictedSalary * 1.1).toLocaleString()}`,
+                                    skills_used: item.skills,
+                                  });
                       }}
                     >
                       <p className="text-white font-medium text-sm truncate">{item.jobTitle}</p>
