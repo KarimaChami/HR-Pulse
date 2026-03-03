@@ -30,7 +30,10 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Run Ruff formatter check
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Run Ruff 
         run: uv run ruff check backend/
 
   # Job 2: Unit Tests (Pytest)
