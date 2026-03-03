@@ -1,0 +1,77 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+
+jobs:
+  # ============================================================
+  # Job 1: Linting & Quality
+  # ============================================================
+  lint:
+    name: Linting & Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ------------------------ Python Linting (Ruff) ------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Run Ruff formatter check
+        run: uv run ruff check backend/
+
+
+  # ============================================================
+  # Job 2: Unit Tests (Pytest)
+  # ============================================================
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint  # Run after linting passes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync --no-dev
+
+      - name: Run Pytest
+        run: uv run pytest tests/ -v 
+        env:
+          DATABASE_URL: mssql+pyodbc://sa:YourStrong@Passw0rd@localhost:1433/master?driver=ODBC+Driver+18+for+SQL+Server
+          SECRET_KEY: test-secret-key-for-ci
+          ALGORITHM: HS256
+
+  # ── Job 3: Docker Build ─────────────────────────────────────────────────────
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Backend image
+        run: docker build -t hr-pulse-backend:ci -f backend/Dockerfile .
+
+      - name: Build Frontend image
+        run: docker build -t hr-pulse-frontend:ci ./frontend
