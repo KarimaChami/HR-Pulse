@@ -7,15 +7,12 @@ on:
     branches: main
 
 jobs:
-
+  # ============================================================
   # Job 1: Linting & Quality
-
+  # ============================================================
   lint:
     name: Linting & Quality
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ github.workspace }}
     
     steps:
       - name: Checkout code
@@ -27,25 +24,50 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install uv
-        run: pip install uv
+      - name: Install Ruff
+        run: pip install ruff
 
-      - name: Install dependencies
-        run: uv sync --dev
+      - name: Run Ruff linter
+        run: ruff check backend/ --output-format=github
 
       - name: Run Ruff formatter check
-        run: uv run ruff check backend/
+        run: ruff format --check backend/
 
+      # ------------------------ Frontend Linting (ESLint) ------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./frontend
+        run: npm run lint
+
+  # ============================================================
   # Job 2: Unit Tests (Pytest)
-
+  # ============================================================
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
     needs: lint  # Run after linting passes
-    defaults:
-      run:
-        working-directory: ${{ github.workspace }}
-    
+
+    services:
+      # SQL Server service for testing (if needed)
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: YourStrong@Passw0rd
+          MSSQL_PID: Express
+        ports:
+          - 1433:1433
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -60,23 +82,57 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --no-dev
-      
+
       - name: Run Pytest
-        run: uv run pytest tests/ -v
+        run: pytest tests/ -v --tb=short
         env:
           DATABASE_URL: mssql+pyodbc://sa:YourStrong@Passw0rd@localhost:1433/master?driver=ODBC+Driver+18+for+SQL+Server
           SECRET_KEY: test-secret-key-for-ci
           ALGORITHM: HS256
 
-  # ── Job 3: Docker Build ─────────────────────────────────────────────────────
-  docker-build:
+  # ============================================================
+  # Job 3: Build Docker Images
+  # ============================================================
+  build:
+    name: Build Docker
     runs-on: ubuntu-latest
-    needs: test
+    needs: test  # Run after tests pass
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Build Backend image
-        run: docker build -t hr-pulse-backend:ci -f backend/Dockerfile .
+      # ------------------------ Build Backend Docker Image ------------------------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build Frontend image
-        run: docker build -t hr-pulse-frontend:ci ./frontend
+      - name: Build Backend Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./backend/Dockerfile
+          push: false
+          tags: hr-pulse-backend:latest
+          cache-from: type=registry,ref=hr-pulse-backend:buildcache
+          cache-to: type=registry,ref=hr-pulse-backend:buildcache,mode=max
+
+      # ------------------------ Build Frontend Docker Image ------------------------
+      - name: Build Frontend Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./frontend/Dockerfile
+          push: false
+          tags: hr-pulse-frontend:latest
+          build-args: |
+            VITE_API_URL=http://localhost:8000
+          cache-from: type=registry,ref=hr-pulse-frontend:buildcache
+          cache-to: type=registry,ref=hr-pulse-frontend:buildcache,mode=max
+
+      # ------------------------ Verify Images ------------------------
+      - name: Verify Backend Image
+        run: docker images | grep hr-pulse-backend
+
+      - name: Verify Frontend Image
+        run: docker images | grep hr-pulse-frontend
+
