@@ -2,7 +2,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from backend.app.schemas.user import UserRegister, UserLogin, UserResponse, Token
+from backend.app.schemas.user import UserRegister, UserResponse, Token
 from backend.app.services.auth_service import get_current_user, register_user, authenticate_user, login_user
 from backend.app.db import get_db,init_db
 # from app.dependencies.auth_dependencies import require_admin
