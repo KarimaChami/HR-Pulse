@@ -29,11 +29,9 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --dev
-        working-directory: HR-Pulse
 
       - name: Run Ruff formatter check
         run: uv run ruff check backend/
-        working-directory: HR-Pulse
 
   # Job 2: Unit Tests (Pytest)
 
@@ -55,10 +53,9 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --no-dev
-        working-directory: HR-Pulse
+      
       - name: Run Pytest
-        run: uv run pytest tests/ -v 
-        working-directory: HR-Pulse
+        run: uv run pytest tests/ -v
         env:
           DATABASE_URL: mssql+pyodbc://sa:YourStrong@Passw0rd@localhost:1433/master?driver=ODBC+Driver+18+for+SQL+Server
           SECRET_KEY: test-secret-key-for-ci
